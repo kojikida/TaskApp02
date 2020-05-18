@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                 reloadListView()
 
             } else {
-                val taskRealmResults = mRealm.where(Task::class.java).equalTo("id", str).findAll().sort("date", Sort.DESCENDING)
+                val taskRealmResults = mRealm.where(Task::class.java).equalTo("category", str).findAll().sort("date", Sort.DESCENDING)
                 // 上記の結果を、TaskList としてセットする
                 mTaskAdapter.taskList = mRealm.copyFromRealm(taskRealmResults)
 
