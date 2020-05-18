@@ -11,6 +11,8 @@ import android.support.v7.app.AlertDialog
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.view.View
+import io.realm.RealmResults
 
 const val EXTRA_TASK = "jp.techacademy.kouji.taskapp.TASK"
 
@@ -60,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             builder.setTitle("削除")
             builder.setMessage(task.title + "を削除しますか")
 
-            builder.setPositiveButton("OK"){_, _ ->
+            builder.setPositiveButton("OK") { _, _ ->
                 val results = mRealm.where(Task::class.java).equalTo("id", task.id).findAll()
 
                 mRealm.beginTransaction()
@@ -89,12 +91,14 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+
         reloadListView()
     }
 
+
     private fun reloadListView() {
-        // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
-        val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+        val taskRealmResults =
+            mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
 
         // 上記の結果を、TaskList としてセットする
         mTaskAdapter.taskList = mRealm.copyFromRealm(taskRealmResults)
@@ -104,11 +108,34 @@ class MainActivity : AppCompatActivity() {
 
         // 表示を更新するために、アダプターにデータが変更されたことを知らせる
         mTaskAdapter.notifyDataSetChanged()
+
+        search_button.setOnClickListener {
+            //EditTextから文字列を取得する。
+            var str = category_search_text.text.toString()
+
+            if (str == "") {
+                reloadListView()
+
+            } else {
+                val taskRealmResults = mRealm.where(Task::class.java).equalTo("id", str).findAll().sort("date", Sort.DESCENDING)
+                // 上記の結果を、TaskList としてセットする
+                mTaskAdapter.taskList = mRealm.copyFromRealm(taskRealmResults)
+
+                // TaskのListView用のアダプタに渡す
+                listView1.adapter = mTaskAdapter
+
+                // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+                mTaskAdapter.notifyDataSetChanged()
+            }
+
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         mRealm.close()
+
     }
+
 }
