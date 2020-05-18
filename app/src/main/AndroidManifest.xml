@@ -32,7 +32,7 @@
                 android:value="jp.techacademy.kouji.taskapp.MainActivity"/>
         </activity>
 
-
+        <receiver android:name=".TaskAlarmReceiver"/>
 
     </application>
 
